@@ -238,7 +238,7 @@ local function WLRYFJ_fake_script() -- DHGlobalShop.LocalScript
 			if not TELEPORT_ONLY then
 				wait(0.5)
 				if fireclickdetector then
-					fireclickdetector(modelHead, 0)
+					fireclickdetector(clickDetector, 0)
 				end
 				rootPart.CFrame = lastPosition
 			end
