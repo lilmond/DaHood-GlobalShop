@@ -22,7 +22,7 @@ local UICorner_5 = Instance.new("UICorner")
 -- Properties
 
 DHGlobalShop.Name = "DHGlobalShop"
-DHGlobalShop.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+DHGlobalShop.Parent = game:GetService("CoreGui")
 DHGlobalShop.ResetOnSpawn = false
 
 MainFrame.Name = "MainFrame"
@@ -165,7 +165,7 @@ local function WLRYFJ_fake_script() -- DHGlobalShop.LocalScript
 	GUI_KEY = "Comma"
 	TWEEN_SPEED = 0.3
 	-- Config End
-	
+
 	local GUI = script.Parent
 	local MainFrame = GUI.MainFrame
 	local ShopButton = GUI.ShopButton
@@ -173,20 +173,20 @@ local function WLRYFJ_fake_script() -- DHGlobalShop.LocalScript
 	local TeleportOnlyToggle = MainFrame.TeleportOnlyToggle
 	local SearchTextBox = MainFrame.TextBox
 	local ToggleKey = MainFrame.ToggleKey
-	
+
 	local Player = game:GetService("Players").LocalPlayer
 	local ShopFolder = game:GetService("Workspace").Ignored.Shop
 	local UserInputService = game:GetService("UserInputService")
-	
+
 	local GUI_VISIBLE = true
 	local CAN_TOGGLE = true
 	local TELEPORT_ONLY = false
-	
+
 	local function toggleGui()
 		if not CAN_TOGGLE then return end
-		
+
 		CAN_TOGGLE = false
-		
+
 		if GUI_VISIBLE then
 			for _, child in pairs(MainFrame:GetChildren()) do if child:IsA("GuiObject") then child.Visible = false end end
 			MainFrame:TweenSizeAndPosition(UDim2.new(0, 0, 0, 0), UDim2.new(0.5, 0, 0.5, 0), Enum.EasingDirection.In, Enum.EasingStyle.Linear, TWEEN_SPEED, false, function() MainFrame.Visible = false CAN_TOGGLE = true end)
@@ -197,7 +197,7 @@ local function WLRYFJ_fake_script() -- DHGlobalShop.LocalScript
 			GUI_VISIBLE = true
 		end
 	end
-	
+
 	local function toggleTeleportOnly()
 		if TELEPORT_ONLY then
 			TELEPORT_ONLY = false
@@ -207,7 +207,7 @@ local function WLRYFJ_fake_script() -- DHGlobalShop.LocalScript
 			TeleportOnlyToggle.Text = "True"
 		end
 	end
-	
+
 	local function clearScrollFrame()
 		for _, child in pairs(ScrollingFrame:GetChildren()) do
 			if child:IsA("GuiObject") then
@@ -215,26 +215,26 @@ local function WLRYFJ_fake_script() -- DHGlobalShop.LocalScript
 			end
 		end
 	end
-	
+
 	local function addButtonForModel(model)
 		local buttonClone = ShopButton:Clone()
 		buttonClone.Text = model.Name
 		buttonClone.Visible = true
 		buttonClone.Parent = ScrollingFrame
-		
+
 		buttonClone.MouseButton1Click:Connect(function()
 			local character = Player.Character
 			if not character then return end
 			local rootPart = character:FindFirstChild("HumanoidRootPart")
 			if not rootPart then return end
-			
+
 			local modelHead = model:FindFirstChild("Head")
 			local clickDetector = model:FindFirstChildWhichIsA("ClickDetector")
 			if not modelHead or not clickDetector then return end
-			
+
 			local lastPosition = rootPart.CFrame
 			rootPart.CFrame = modelHead.CFrame
-			
+
 			if not TELEPORT_ONLY then
 				wait(0.5)
 				if fireclickdetector then
@@ -244,49 +244,51 @@ local function WLRYFJ_fake_script() -- DHGlobalShop.LocalScript
 			end
 		end)
 	end
-	
+
 	local function updateScrollFrame()
 		clearScrollFrame()
-		
+
 		for _, child in pairs(ShopFolder:GetChildren()) do
 			if child:IsA("Model") and string.find(child.Name:lower(), SearchTextBox.Text:lower()) then
 				addButtonForModel(child)
 			end
 		end
+		
+		ScrollingFrame.CanvasSize = UDim2.fromOffset(0, ((#ScrollingFrame:GetChildren() - 1) * 55))
 	end
-	
+
 	local function updateToggleKey()
 		local con = nil
 		con = UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
 			if gameProcessedEvent then return end
-			
+
 			con:Disconnect()
-			
+
 			local keyCode = input.KeyCode
 			local keyString = keyCode.Name
-			
+
 			ToggleKey.Text = keyString
 			wait()
 			GUI_KEY = keyString
 		end)
 	end
-	
+
 	UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
 		if gameProcessedEvent then return end
-		
+
 		local keyCode = input.KeyCode
 		local keyString = keyCode.Name:lower()
-		
+
 		if keyString == GUI_KEY:lower() then
 			toggleGui()
 		end
 	end)
-	
+
 	TeleportOnlyToggle.MouseButton1Click:Connect(toggleTeleportOnly)
 	SearchTextBox.InputEnded:Connect(updateScrollFrame)
 	ToggleKey.MouseButton1Click:Connect(updateToggleKey)
 	ToggleKey.Text = GUI_KEY
-	
+
 	updateScrollFrame()
 end
 coroutine.wrap(WLRYFJ_fake_script)()
